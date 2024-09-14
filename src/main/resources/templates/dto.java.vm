@@ -1,0 +1,43 @@
+package ${cfg.basePackage}.${package.ModuleName}.dto;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+
+/**
+ * 【${table.comment}】交互层
+ *
+ * @author ${author}
+ * @date ${date}
+ */
+@Data
+#if("$!table.comment" != "")
+@ApiModel(value = "【${table.comment}】交互层")
+#end
+public class ${entity}DTO {
+
+    #foreach($field in ${table.fields})
+    #if("$!field.comment" != "")
+##    /**
+##     *   ${field.comment}
+##     */
+    @ApiModelProperty(value = "${field.comment}")
+    #end
+    private ${field.propertyType} ${field.propertyName};
+
+    #end
+    @ApiModelProperty(value = "分页大小")
+    private Integer size = 20;
+
+    @ApiModelProperty(value = "当前页")
+    private Integer current = 1;
+
+    @ApiModelProperty(value = "排序字段")
+    private String sortBy;
+## ----------  END 字段循环遍历  ----------
+}

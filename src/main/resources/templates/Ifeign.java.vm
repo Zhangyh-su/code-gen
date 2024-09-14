@@ -1,0 +1,61 @@
+package ${cfg.basePackage}.${package.ModuleName}.feign;
+
+import ${cfg.basePackage}.${package.ModuleName}.dto.${entity}DTO;
+import ${cfg.basePackage}.${package.ModuleName}.vo.${entity}VO;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
+import ${cfg.basePackage}.${package.ModuleName}.result.Result;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 【${table.comment}】feign接口层
+ *
+ * @author ${author}
+ * @date ${date}
+ */
+@FeignClient(value = "${package.ModuleName}", path = "/feign/#if(${controllerMappingHyphenStyle})${controllerMappingHyphen}#else${table.entityPath}#end")
+public interface I${entity}Feign {
+
+    @PostMapping("/list")
+    Result<List<${entity}VO>> list(@RequestBody ${entity}DTO dto);
+
+    @PostMapping("/page")
+    Result<Page<${entity}VO>> page(@RequestBody ${entity}DTO dto);
+
+    #if(${cfg.generateInsertReturnId})
+    @PostMapping("/insertReturnId")
+    Result<Long> insertReturnId(@RequestBody ${entity}DTO dto);
+
+    #end
+    #if(${cfg.generateCurd})
+    @PostMapping
+    Result<Boolean> insert(@RequestBody ${entity}DTO dto);
+
+    @PutMapping
+    Result<Boolean> update(@RequestBody ${entity}DTO dto);
+
+    @DeleteMapping("/{id}")
+    Result<Boolean> delete(@PathVariable("id") Long id);
+
+    @GetMapping("/{id}")
+    Result<${entity}VO> detail(@PathVariable("id") Long id);
+
+    @DeleteMapping("/batchDelete")
+    Result<Boolean> batchDelete(@RequestBody List<Long> ids);
+
+    #end
+
+    #if(${cfg.generateExcelTemplate})
+
+    @PostMapping("/importExcel")
+    Result<Boolean> importExcel(@RequestParam(value = "file") MultipartFile file);
+
+    @GetMapping("/downloadExcel")
+    void downloadExcel(@RequestBody List<Long> ids, HttpServletResponse response);
+
+    #end
+
+}

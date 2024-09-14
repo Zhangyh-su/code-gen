@@ -1,0 +1,80 @@
+package ${package.ServiceImpl};
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import ${package.Entity}.${entity};
+import ${cfg.basePackage}.${package.ModuleName}.vo.${entity}VO;
+import ${cfg.basePackage}.${package.ModuleName}.mapper.${table.mapperName};
+import ${package.Service}.${table.serviceName};
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+#if(${cfg.generateExcelTemplate})
+import ${cfg.basePackage}.${package.ModuleName}.excel.${entity}ExcelDTO;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import cn.afterturn.easypoi.excel.ExcelImportUtil;
+import cn.afterturn.easypoi.excel.entity.ImportParams;
+import java.util.List;
+import java.util.stream.Collectors;
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
+import org.springframework.beans.BeanUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+#end
+/**
+ * 【${table.comment}】实现层
+ *
+ * @author ${author}
+ * @date ${date}
+ */
+@Slf4j
+@Service
+#if(${kotlin})
+open class ${table.serviceImplName} : ${superServiceImplClass}<${table.mapperName}, ${entity}>(), ${table.serviceName} {
+
+        }
+#else
+public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.mapperName}, ${entity}> implements ${table.serviceName} {
+    #if(${cfg.generateExcelTemplate})
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean importExcel(MultipartFile file){
+        try {
+            ExcelReader reader = ExcelUtil.getReader(file.getInputStream());
+            ImportParams importParams = new ImportParams();
+            for (int i = 0; i < reader.getSheetCount(); i++) {
+                //设置读取第几个sheet页
+                importParams.setStartSheetIndex(i);
+                List<${entity}ExcelDTO> result = ExcelImportUtil.importExcel(file.getInputStream(), ${entity}ExcelDTO.class, importParams);
+                List<${entity}> excelList = result.stream().map(excelDTO -> {
+                    ${entity} entity = new ${entity}();
+                    BeanUtils.copyProperties(excelDTO, entity);
+##                    entity.setDeleted(false);
+                    return entity;
+                }).collect(Collectors.toList());
+                this.saveBatch(excelList);
+                }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    @Override
+    public List<${entity}ExcelDTO> downloadExcel(List<Long> ids){
+        List<${entity}> list;
+        if (ids.size()>0){
+            list = this.listByIds(ids);
+        }else {
+            list =this.list();
+        }
+        List<${entity}ExcelDTO> excelList = list.stream().map(excel -> {
+            ${entity}ExcelDTO excelDto = new ${entity}ExcelDTO();
+            BeanUtils.copyProperties(excel, excelDto);
+            return excelDto;
+        }).collect(Collectors.toList());
+        return excelList;
+    }
+    #end
+}
+#end

@@ -1,0 +1,45 @@
+package ${cfg.basePackage}.${package.ModuleName}.vo;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+/**
+ * 【${table.comment}】响应层
+ *
+ * @author ${author}
+ * @date ${date}
+ */
+@Data
+@ApiModel(value = "【$!{table.comment}】返回层")
+public class ${entity}VO {
+
+    #foreach($field in ${table.fields})
+    #if("$!field.comment" != "")
+##    /**
+##    *   ${field.comment}
+##    */
+    @ApiModelProperty(value = "${field.comment}")
+    #end
+    private ${field.propertyType} ${field.propertyName};
+    #if(${cfg.generateUsername})
+    #if("$field.propertyName" == "createUserId")
+
+    @ApiModelProperty(value = "创建人")
+    private String createUser;
+    #end
+    #if("$field.propertyName" == "updateUserId")
+
+    @ApiModelProperty(value = "修改人")
+    private String updateUser;
+    #end
+    #end
+
+    #end
+    ## ----------  END 字段循环遍历  ----------
+}

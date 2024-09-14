@@ -1,0 +1,41 @@
+package ${package.Service};
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import ${package.Entity}.${entity};
+import ${superServiceClassPackage};
+import ${cfg.basePackage}.${package.ModuleName}.vo.${entity}VO;
+import ${cfg.basePackage}.${package.ModuleName}.dto.${entity}DTO;
+#if(${cfg.generateExcelTemplate})
+import org.springframework.web.multipart.MultipartFile;
+import ${cfg.basePackage}.${package.ModuleName}.excel.${entity}ExcelDTO;
+#end
+import java.util.List;
+
+/**
+ * 【${table.comment}】代理层
+ *
+ * @author ${author}
+ * @date ${date}
+ */
+#if(${kotlin})
+interface ${table.serviceName} : ${superServiceClass}<${entity}>
+#else
+public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
+    #if(${cfg.generateExcelTemplate})
+    /**
+    * 导入Excel
+    *
+    * @param file 文件
+    * @return 是否
+    */
+    Boolean importExcel(MultipartFile file);
+    /**
+    * 导出Excel
+    *
+    * @param ids ID列表
+    * @return 对象列表
+    */
+    List<${entity}ExcelDTO> downloadExcel(List<Long> ids);
+    #end
+}
+#end

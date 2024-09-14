@@ -1,0 +1,40 @@
+package ${cfg.basePackage}.${package.ModuleName}.excel;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import cn.afterturn.easypoi.excel.annotation.Excel;
+import lombok.Data;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+
+/**
+ * 【${table.comment}】交互层
+ *
+ * @author ${author}
+ * @date ${date}
+ */
+@Data
+#if("$!table.comment" != "")
+@ApiModel(value = "【${table.comment}】交互层")
+#end
+public class ${entity}ExcelDTO implements Serializable {
+
+    #foreach($field in ${table.fields})
+    #if("$!field.comment" != "")
+##    /**
+##     *   ${field.comment}
+##     */
+    @ApiModelProperty(value = "${field.comment}")
+    #if(!${field.fill})
+    @Excel(name = "${field.comment}")
+    #end
+    #end
+    private ${field.propertyType} ${field.propertyName};
+
+    #end
+
+## ----------  END 字段循环遍历  ----------
+}
